@@ -3,11 +3,11 @@
 <head>
     <title>Bulk Test Case Verdicts</title>
     <!--  (c) 2014 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Thu Feb 27 2014 22:14:35 GMT-0800 (PST) -->
+    <!--  Build Date: Fri Feb 28 2014 13:21:27 GMT-0800 (PST) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Thu Feb 27 2014 22:14:35 GMT-0800 (PST)";
-        var CHECKSUM = 16609371903;
+        var APP_BUILD_DATE = "Fri Feb 28 2014 13:21:27 GMT-0800 (PST)";
+        var CHECKSUM = 17029487307;
     </script>
     
     <script type="text/javascript" src="/apps/2.0rc2/sdk.js"></script>
@@ -373,6 +373,12 @@ Ext.override(Rally.ui.menu.bulk.RecordMenu,{
         {xtype: 'tsbulkverdict'}
     ]
 });
+
+Ext.override(Rally.ui.grid.CheckboxModel,{
+    getHeaderConfig: function() {
+        return Ext.apply(this.callParent(arguments), { cls: this.self.headerCheckboxCls });
+    }
+});
 Ext.define('Rally.technicalservices.TestCaseChooser',{
     extend:'Rally.ui.dialog.Dialog',
     alias:'widget.tstestcasechooser',
@@ -647,6 +653,9 @@ Ext.define('CustomApp', {
             store: store,
             showRowActionsColumn: true,
             enableBulkEdit: true,
+            selModel: {
+                xtype:'rallycheckboxmodel'  
+            },
             pagingToolbarCfg: {
                 store: store
             },

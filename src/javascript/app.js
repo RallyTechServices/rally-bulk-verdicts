@@ -92,6 +92,9 @@ Ext.define('CustomApp', {
             store: store,
             showRowActionsColumn: true,
             enableBulkEdit: true,
+            selModel: {
+                xtype:'rallycheckboxmodel'  
+            },
             pagingToolbarCfg: {
                 store: store
             },

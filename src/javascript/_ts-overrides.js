@@ -4,3 +4,9 @@ Ext.override(Rally.ui.menu.bulk.RecordMenu,{
         {xtype: 'tsbulkverdict'}
     ]
 });
+
+Ext.override(Rally.ui.grid.CheckboxModel,{
+    getHeaderConfig: function() {
+        return Ext.apply(this.callParent(arguments), { cls: this.self.headerCheckboxCls });
+    }
+});
