@@ -1,0 +1,6 @@
+{
+    "name": "Bulk Test Case Verdicts",
+    "className": "CustomApp",
+    "server": "https://audemo.rallydev.com",
+    "sdk": "2.0rc2"
+}
