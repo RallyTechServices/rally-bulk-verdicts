@@ -3,11 +3,11 @@
 <head>
     <title>Bulk Test Case Verdicts</title>
     <!--  (c) 2014 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Thu Feb 27 2014 21:48:36 GMT-0800 (PST) -->
+    <!--  Build Date: Thu Feb 27 2014 21:51:43 GMT-0800 (PST) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Thu Feb 27 2014 21:48:36 GMT-0800 (PST)";
-        var CHECKSUM = 15660706980;
+        var APP_BUILD_DATE = "Thu Feb 27 2014 21:51:43 GMT-0800 (PST)";
+        var CHECKSUM = 15704463542;
     </script>
     
     <script type="text/javascript" src="/apps/2.0rc2/sdk.js"></script>
@@ -627,44 +627,44 @@ Ext.define('CustomApp', {
             data: testcases
         });
         
-        var editor_config = this._getGearConfig();
+       // var editor_config = this._getGearConfig();
         
         this.down('#display_box').add({
             xtype:'rallygrid',
             store: store,
-            showRowActionsColumn: false,
+            showRowActionsColumn: true,
             enableBulkEdit: true,
             pagingToolbarCfg: {
                 store: store
             },
             columnCfgs: [
-                editor_config,
+                /*editor_config,*/
                 {text:'id',dataIndex:'FormattedID'},
                 {text:'Name',dataIndex:'Name' },
                 {text:'Last Verdict',dataIndex: 'LastVerdict'}
             ]
         });
-    },
-    _getGearConfig: function() {
-        return { 
-            xtype: 'rallyrowactioncolumn',
-            rowActionsFn: function (record) {
-                return [
-                    {
-                        xtype: 'rallyrecordmenuitemedit',
-                        record: record
-                    },
-                    {
-                        text:'Set Verdict...',
-                        record: record,
-                        handler: function() {
-                            // this.record
-                        }
-                    }
-                ];
-            }
-        }
     }
+//    _getGearConfig: function() {
+//        return { 
+//            xtype: 'rallyrowactioncolumn',
+//            rowActionsFn: function (record) {
+//                return [
+//                    {
+//                        xtype: 'rallyrecordmenuitemedit',
+//                        record: record
+//                    },
+//                    {
+//                        text:'Set Verdict...',
+//                        record: record,
+//                        handler: function() {
+//                            // this.record
+//                        }
+//                    }
+//                ];
+//            }
+//        }
+//    }
 });
 
             

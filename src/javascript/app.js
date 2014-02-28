@@ -80,42 +80,42 @@ Ext.define('CustomApp', {
             data: testcases
         });
         
-        var editor_config = this._getGearConfig();
+       // var editor_config = this._getGearConfig();
         
         this.down('#display_box').add({
             xtype:'rallygrid',
             store: store,
-            showRowActionsColumn: false,
+            showRowActionsColumn: true,
             enableBulkEdit: true,
             pagingToolbarCfg: {
                 store: store
             },
             columnCfgs: [
-                editor_config,
+                /*editor_config,*/
                 {text:'id',dataIndex:'FormattedID'},
                 {text:'Name',dataIndex:'Name' },
                 {text:'Last Verdict',dataIndex: 'LastVerdict'}
             ]
         });
-    },
-    _getGearConfig: function() {
-        return { 
-            xtype: 'rallyrowactioncolumn',
-            rowActionsFn: function (record) {
-                return [
-                    {
-                        xtype: 'rallyrecordmenuitemedit',
-                        record: record
-                    },
-                    {
-                        text:'Set Verdict...',
-                        record: record,
-                        handler: function() {
-                            // this.record
-                        }
-                    }
-                ];
-            }
-        }
     }
+//    _getGearConfig: function() {
+//        return { 
+//            xtype: 'rallyrowactioncolumn',
+//            rowActionsFn: function (record) {
+//                return [
+//                    {
+//                        xtype: 'rallyrecordmenuitemedit',
+//                        record: record
+//                    },
+//                    {
+//                        text:'Set Verdict...',
+//                        record: record,
+//                        handler: function() {
+//                            // this.record
+//                        }
+//                    }
+//                ];
+//            }
+//        }
+//    }
 });
