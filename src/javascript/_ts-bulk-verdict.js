@@ -35,9 +35,14 @@ Ext.define('Rally.technicalservices.bulkverdict', {
 
         var promises = [];
         _.each(records, function (testcase) {
-            promises.push(me._addResult(testcase,build,verdict));
+            // marshal into a sequence so we don't 
+            // get a concurrency conflict
+            var f = function() {
+                return me._addResult(testcase,build,verdict);
+            };
+            promises.push(f);
         });
-        Deft.Promise.all(promises).then({
+        Deft.Chain.sequence(promises).then({
             success: function(records) {
               successfulRecords = Ext.Array.flatten(records);
             },
@@ -52,27 +57,30 @@ Ext.define('Rally.technicalservices.bulkverdict', {
     
     _addResult: function(testcase,build,verdict) {
         var deferred = Ext.create('Deft.Deferred');
-        console.log("_addResult",testcase,build,verdict);
-        
         var today = Rally.util.DateTime.toIsoString(new Date());
+
+        var tcr_data = {
+            Build: build,
+            Verdict: verdict,
+            TestCase: testcase.get("_ref"),
+            Date: today
+        };
+        
+        if ( testcase.get('_source_container') && testcase.get('_source_container').get('_type') == 'testset' ) {
+            tcr_data.TestSet = "/testset/" + testcase.get('_source_container').get('ObjectID');
+        }
         
         Rally.data.ModelFactory.getModel({
             type:'TestCaseResult',
             success: function(model) {
-                var tcr = Ext.create(model,{
-                    Build: build,
-                    Verdict: verdict,
-                    TestCase: testcase.get("_ref"),
-                    Date: today
-                });
-                console.log('about to save');
+                var tcr = Ext.create(model,tcr_data);
                 tcr.save({
                     callback: function(result,operation){
                         if ( operation.wasSuccessful() ) {
                             testcase.set('LastVerdict', verdict);
                             deferred.resolve([result]);
                         } else {
-                            deferred.reject("Problem saving: " + testcase.get('FormattedID') + " (" +
+                            deferred.reject("Problem saving: " + testcase.get('FormattedID') + "<br/> (" +
                                     operation.error.errors[0] + ")");
                         }
                     }

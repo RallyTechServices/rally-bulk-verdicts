@@ -63,6 +63,11 @@ Ext.define('CustomApp', {
                     callback:function(result,operation){
                         result.getCollection('TestCases').load({
                             callback: function(cases,operation,success) {
+                                Ext.Array.each(cases,function(tc){
+                                    // pushing the parent into the tc so it's available
+                                    // (in case it's a test set, so tcr related to both)
+                                    tc.set('_source_container',parent);
+                                });
                                 deferred.resolve(cases);
                             }
                         });
