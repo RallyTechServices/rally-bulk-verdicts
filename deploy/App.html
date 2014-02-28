@@ -3,11 +3,11 @@
 <head>
     <title>Bulk Test Case Verdicts</title>
     <!--  (c) 2014 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Thu Feb 27 2014 19:59:39 GMT-0800 (PST) -->
+    <!--  Build Date: Thu Feb 27 2014 21:48:36 GMT-0800 (PST) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Thu Feb 27 2014 19:59:39 GMT-0800 (PST)";
-        var CHECKSUM = 6511773787;
+        var APP_BUILD_DATE = "Thu Feb 27 2014 21:48:36 GMT-0800 (PST)";
+        var CHECKSUM = 15660706980;
     </script>
     
     <script type="text/javascript" src="/apps/2.0rc2/sdk.js"></script>
@@ -15,6 +15,228 @@
     <script type="text/javascript">
         Rally.onReady(function() {
              
+Ext.define('Rally.technicalservices.VerdictDialog',{
+    extend: 'Rally.ui.dialog.Dialog',
+    alias: 'widget.tsverdictdialog',
+    autoShow: true,
+    cls: 'bulk-edit-dialog',
+    title: 'Set Verdict...',
+    width: 350,
+    config: {
+        /**
+         * @cfg {[Rally.data.Model]} records (required)
+         * The records to bulk edit
+         */
+        records: null
+    },
+    initComponent: function() {
+        this.callParent(arguments);
+
+        this.addEvents(
+            /**
+             * @param Rally.technicalservices.VerdictDialog this the dialog
+             * @param {String} build the build
+             * @param {String} verdict the new verdict
+             */
+            'verdictSelected'
+        );
+        
+        this.add(this._getDirections());
+        
+        this.addDocked({
+            xtype: 'toolbar',
+            dock: 'bottom',
+            padding: '0 0 10 0',
+            layout: {
+                type: 'hbox',
+                pack: 'center'
+            },
+            ui: 'footer',
+            items: [
+                {
+                    xtype: 'rallybutton',
+                    itemId: 'applyButton',
+                    text: 'Apply',
+                    cls: 'primary small',
+                    disabled: true,
+                    handler: function() {
+                        var build = Ext.String.trim( this.down('#buildField').getValue() ) ;
+                        var verdict = this.down('#verdictField').getValue();
+                        this.fireEvent('verdictSelected', this, build, verdict);
+                        this.close();
+                    },
+                    scope: this
+                },
+                {
+                    xtype: 'rallybutton',
+                    text: 'Cancel',
+                    cls: 'secondary small',
+                    handler: function() {
+                        this.close();
+                    },
+                    scope: this
+                }
+            ]
+        });
+        
+        this.add(this._getForm());
+    },
+
+    _getForm: function() {
+        return {
+            xtype: 'container',
+            itemId: 'form-container',
+            cls: 'form-container',
+            layout: { type:'hbox' },
+            items: [
+                {
+                    xtype: 'rallytextfield',
+                    itemId: 'buildField',
+                    emptyText: 'Choose Build...',
+                    listeners: {
+                        change: this._onFieldSelect,
+                        scope: this
+                    }
+                },
+                {
+                    xtype: 'component',
+                    cls: 'text',
+                    html: '   '
+                },
+                {
+                    xtype: 'rallyfieldvaluecombobox',
+                    itemId: 'verdictField',
+                    model: 'TestCaseResult',
+                    emptyText: 'Choose Verdict...',
+                    field: 'Verdict',
+                    listeners: {
+                        select: this._onFieldSelect,
+                        scope: this
+                    }
+                }
+            ]
+        }
+    },
+    
+    _getDirections: function() {
+        return {
+            xtype: 'component',
+            cls: 'directions',
+            renderTpl: Ext.create('Ext.XTemplate',
+                'For the <tpl>{[values.recordCount]}</tpl> checked ',
+                '<tpl if="recordCount === 1">item<tpl else>items</tpl> set the build and verdict to:'
+            ),
+            renderData: {
+                recordCount: this.records.length
+            }
+        };
+    },
+    
+    _onFieldSelect: function() {
+        var build = Ext.String.trim( this.down('#buildField').getValue() ) ;
+        var verdict = this.down('#verdictField').getValue();
+        
+        if ( build && verdict ) {
+            this.down('#applyButton').setDisabled(false);
+        } else {
+            this.down('#applyButton').setDisabled(true);
+        }
+    },
+    
+    afterRender: function() {
+        this.callParent(arguments);
+        Ext.defer(function() {
+            this.down('#buildField').focus();
+        }, 150, this);
+    }
+    
+});
+Ext.define('Rally.technicalservices.bulkverdict', {
+    extend: 'Rally.ui.menu.bulk.MenuItem',
+    alias: 'widget.tsbulkverdict',
+
+    config: {
+        text: 'Set Verdict...',
+        handler: function() {
+            this._onVerdictClicked();
+        },
+        predicate: function(records) {
+            return _.every(records, function(record) {
+                return record.self.isArtifact();
+            });
+        }
+    },
+    
+    _onVerdictClicked: function() {
+        Ext.create('Rally.technicalservices.VerdictDialog', {
+            records: this.records,
+            listeners: {
+                verdictSelected: this._setVerdicts,
+                scope: this
+            }
+        });
+    },
+
+    _setVerdicts: function(dialog, build, verdict) {
+        if (this.onBeforeAction(this.records) === false) {
+            return;
+        }
+
+        var me = this,
+            records = me.records,
+            successfulRecords = [];
+
+        var promises = [];
+        _.each(records, function (testcase) {
+            promises.push(me._addResult(testcase,build,verdict));
+        });
+        Deft.Promise.all(promises).then({
+            success: function(records) {
+              successfulRecords = Ext.Array.flatten(records);
+            },
+            failure: function(error) {
+              alert(error);
+            }
+        }).always(function() {
+            Ext.callback(me.onActionComplete, null, [successfulRecords, []]);
+        });
+        
+    },
+    
+    _addResult: function(testcase,build,verdict) {
+        var deferred = Ext.create('Deft.Deferred');
+        console.log("_addResult",testcase,build,verdict);
+        
+        var today = Rally.util.DateTime.toIsoString(new Date());
+        
+        Rally.data.ModelFactory.getModel({
+            type:'TestCaseResult',
+            success: function(model) {
+                var tcr = Ext.create(model,{
+                    Build: build,
+                    Verdict: verdict,
+                    TestCase: testcase.get("_ref"),
+                    Date: today
+                });
+                console.log('about to save');
+                tcr.save({
+                    callback: function(result,operation){
+                        if ( operation.wasSuccessful() ) {
+                            testcase.set('LastVerdict', verdict);
+                            deferred.resolve([result]);
+                        } else {
+                            deferred.reject("Problem saving: " + testcase.get('FormattedID') + " (" +
+                                    operation.error.errors[0] + ")");
+                        }
+                    }
+                });
+            }
+        });
+        return deferred;
+        
+    }
+
+});
 /**
  * A link that pops up a version dialog box
  */
@@ -137,6 +359,12 @@ Ext.define('Rally.technicalservices.Logger',{
 
 });
 
+Ext.override(Rally.ui.menu.bulk.RecordMenu,{
+    items: [
+        {xtype: 'rallyrecordmenuitembulkedit'},
+        {xtype: 'tsbulkverdict'}
+    ]
+});
 Ext.define('Rally.technicalservices.TestCaseChooser',{
     extend:'Rally.ui.dialog.Dialog',
     alias:'widget.tstestcasechooser',
@@ -399,18 +627,43 @@ Ext.define('CustomApp', {
             data: testcases
         });
         
+        var editor_config = this._getGearConfig();
+        
         this.down('#display_box').add({
             xtype:'rallygrid',
             store: store,
+            showRowActionsColumn: false,
+            enableBulkEdit: true,
             pagingToolbarCfg: {
                 store: store
             },
             columnCfgs: [
+                editor_config,
                 {text:'id',dataIndex:'FormattedID'},
                 {text:'Name',dataIndex:'Name' },
                 {text:'Last Verdict',dataIndex: 'LastVerdict'}
             ]
         });
+    },
+    _getGearConfig: function() {
+        return { 
+            xtype: 'rallyrowactioncolumn',
+            rowActionsFn: function (record) {
+                return [
+                    {
+                        xtype: 'rallyrecordmenuitemedit',
+                        record: record
+                    },
+                    {
+                        text:'Set Verdict...',
+                        record: record,
+                        handler: function() {
+                            // this.record
+                        }
+                    }
+                ];
+            }
+        }
     }
 });
 
