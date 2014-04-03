@@ -9,6 +9,7 @@ Ext.define('CustomApp', {
         {xtype:'tsinfolink'}
     ],
     launch: function() {
+        this.logger.log("Launch");
         this._addButton(this.down('#selector_box'));
     },
     _addButton: function(container) {

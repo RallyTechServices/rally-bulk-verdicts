@@ -3,11 +3,11 @@
 <head>
     <title>Bulk Test Case Verdicts</title>
     <!--  (c) 2014 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Fri Feb 28 2014 13:21:27 GMT-0800 (PST) -->
+    <!--  Build Date: Wed Apr 02 2014 21:13:05 GMT-0700 (PDT) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Fri Feb 28 2014 13:21:27 GMT-0800 (PST)";
-        var CHECKSUM = 17029487307;
+        var APP_BUILD_DATE = "Wed Apr 02 2014 21:13:05 GMT-0700 (PDT)";
+        var CHECKSUM = 18284235707;
     </script>
     
     <script type="text/javascript" src="/apps/2.0rc2/sdk.js"></script>
@@ -300,7 +300,7 @@ Ext.define('Rally.technicalservices.InfoLink',{
                 text = response.responseText;
                 if ( CHECKSUM ) {
                     if ( CHECKSUM !== me._generateChecksum(text) ) {
-                        console.log("Checksums don't match!");
+                        window.console && console.log("Checksums don't match!");
                         if ( me.dialog ) {
                             me.dialog.add({xtype:'container',html:'Checksums do not match'});
                         }
@@ -374,11 +374,28 @@ Ext.override(Rally.ui.menu.bulk.RecordMenu,{
     ]
 });
 
-Ext.override(Rally.ui.grid.CheckboxModel,{
-    getHeaderConfig: function() {
-        return Ext.apply(this.callParent(arguments), { cls: this.self.headerCheckboxCls });
-    }
-});
+//Ext.override(Rally.ui.grid.CheckboxModel,{
+//    getHeaderConfig: function() {
+//        return Ext.apply(this.callParent(arguments), { cls: this.self.headerCheckboxCls });
+//    }
+//});
+
+
+    Ext.override(Rally.ui.grid.ColumnBuilder, {
+        _disabledEditorColumnsAsNeeded: function(columns) {
+            if (this.disabledEditorColumns && this.disabledEditorColumns.length > 0) {
+                _.each(columns, function(column) {
+//                    Fix for IE 8
+//                    if (this.disabledEditorColumns.indexOf(column.dataIndex) > -1) {
+                    if (Ext.Array.indexOf(this.disabledEditorColumns,column.dataIndex) > -1) {
+                        column.editor = undefined;
+                        column.tdCls = column.tdCls.replace('editable', '');
+                    }
+                }, this);
+            }
+            return columns;
+        }
+    });
 Ext.define('Rally.technicalservices.TestCaseChooser',{
     extend:'Rally.ui.dialog.Dialog',
     alias:'widget.tstestcasechooser',
@@ -532,6 +549,7 @@ Ext.define('Rally.technicalservices.TestCaseChooser',{
     },
     _addGrid: function(records){
         var store = Ext.create('Rally.data.custom.Store',{ data: records });
+
         this.down('#grid_box').removeAll();
         var mode = 'MULTI';
         if ( this.multiple ) {
@@ -542,18 +560,19 @@ Ext.define('Rally.technicalservices.TestCaseChooser',{
             mode: mode,
             allowDeselect: true
         });
-            
-        this.down('#grid_box').add({
-            xtype:'rallygrid',
+        
+        var grid = Ext.create('Rally.ui.grid.Grid',{
             store:store,
             height: 150,
-            selModel:this.selectionModel,
+            selModel:this.selectionModel, 
             showPagingToolbar: false,
             columnCfgs:  [
                 {text:'id',dataIndex:'FormattedID'},
                 {text:'Name',dataIndex:'Name', flex: 1}
             ]
         });
+        
+        this.down('#grid_box').add(grid);
         
         this.down('#run_button').setDisabled(false);
     }
@@ -570,6 +589,7 @@ Ext.define('CustomApp', {
         {xtype:'tsinfolink'}
     ],
     launch: function() {
+        this.logger.log("Launch");
         this._addButton(this.down('#selector_box'));
     },
     _addButton: function(container) {

@@ -151,6 +151,7 @@ Ext.define('Rally.technicalservices.TestCaseChooser',{
     },
     _addGrid: function(records){
         var store = Ext.create('Rally.data.custom.Store',{ data: records });
+
         this.down('#grid_box').removeAll();
         var mode = 'MULTI';
         if ( this.multiple ) {
@@ -161,18 +162,19 @@ Ext.define('Rally.technicalservices.TestCaseChooser',{
             mode: mode,
             allowDeselect: true
         });
-            
-        this.down('#grid_box').add({
-            xtype:'rallygrid',
+        
+        var grid = Ext.create('Rally.ui.grid.Grid',{
             store:store,
             height: 150,
-            selModel:this.selectionModel,
+            selModel:this.selectionModel, 
             showPagingToolbar: false,
             columnCfgs:  [
                 {text:'id',dataIndex:'FormattedID'},
                 {text:'Name',dataIndex:'Name', flex: 1}
             ]
         });
+        
+        this.down('#grid_box').add(grid);
         
         this.down('#run_button').setDisabled(false);
     }
