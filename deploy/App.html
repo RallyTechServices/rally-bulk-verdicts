@@ -3,11 +3,11 @@
 <head>
     <title>Bulk Test Case Verdicts</title>
     <!--  (c) 2014 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Wed Apr 02 2014 21:13:05 GMT-0700 (PDT) -->
+    <!--  Build Date: Sat Apr 12 2014 16:44:54 GMT-0700 (PDT) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Wed Apr 02 2014 21:13:05 GMT-0700 (PDT)";
-        var CHECKSUM = 18284235707;
+        var APP_BUILD_DATE = "Sat Apr 12 2014 16:44:54 GMT-0700 (PDT)";
+        var CHECKSUM = 17612042651;
     </script>
     
     <script type="text/javascript" src="/apps/2.0rc2/sdk.js"></script>
@@ -231,6 +231,7 @@ Ext.define('Rally.technicalservices.bulkverdict', {
                     callback: function(result,operation){
                         if ( operation.wasSuccessful() ) {
                             testcase.set('LastVerdict', verdict);
+                            testcase.set('LastRun',new Date());
                             deferred.resolve([result]);
                         } else {
                             deferred.reject("Problem saving: " + testcase.get('FormattedID') + "<br/> (" +
@@ -666,7 +667,6 @@ Ext.define('CustomApp', {
             data: testcases
         });
         
-       // var editor_config = this._getGearConfig();
         
         this.down('#display_box').add({
             xtype:'rallygrid',
@@ -680,33 +680,13 @@ Ext.define('CustomApp', {
                 store: store
             },
             columnCfgs: [
-                /*editor_config,*/
                 {text:'id',dataIndex:'FormattedID'},
                 {text:'Name',dataIndex:'Name' },
-                {text:'Last Verdict',dataIndex: 'LastVerdict'}
+                {text:'Last Verdict',dataIndex: 'LastVerdict'},
+                {text:'Last Run', dataIndex:'LastRun',renderer: Ext.util.Format.dateRenderer('Y-m-d') }
             ]
         });
     }
-//    _getGearConfig: function() {
-//        return { 
-//            xtype: 'rallyrowactioncolumn',
-//            rowActionsFn: function (record) {
-//                return [
-//                    {
-//                        xtype: 'rallyrecordmenuitemedit',
-//                        record: record
-//                    },
-//                    {
-//                        text:'Set Verdict...',
-//                        record: record,
-//                        handler: function() {
-//                            // this.record
-//                        }
-//                    }
-//                ];
-//            }
-//        }
-//    }
 });
 
             

@@ -78,6 +78,7 @@ Ext.define('Rally.technicalservices.bulkverdict', {
                     callback: function(result,operation){
                         if ( operation.wasSuccessful() ) {
                             testcase.set('LastVerdict', verdict);
+                            testcase.set('LastRun',new Date());
                             deferred.resolve([result]);
                         } else {
                             deferred.reject("Problem saving: " + testcase.get('FormattedID') + "<br/> (" +

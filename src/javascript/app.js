@@ -86,7 +86,6 @@ Ext.define('CustomApp', {
             data: testcases
         });
         
-       // var editor_config = this._getGearConfig();
         
         this.down('#display_box').add({
             xtype:'rallygrid',
@@ -100,31 +99,11 @@ Ext.define('CustomApp', {
                 store: store
             },
             columnCfgs: [
-                /*editor_config,*/
                 {text:'id',dataIndex:'FormattedID'},
                 {text:'Name',dataIndex:'Name' },
-                {text:'Last Verdict',dataIndex: 'LastVerdict'}
+                {text:'Last Verdict',dataIndex: 'LastVerdict'},
+                {text:'Last Run', dataIndex:'LastRun',renderer: Ext.util.Format.dateRenderer('Y-m-d') }
             ]
         });
     }
-//    _getGearConfig: function() {
-//        return { 
-//            xtype: 'rallyrowactioncolumn',
-//            rowActionsFn: function (record) {
-//                return [
-//                    {
-//                        xtype: 'rallyrecordmenuitemedit',
-//                        record: record
-//                    },
-//                    {
-//                        text:'Set Verdict...',
-//                        record: record,
-//                        handler: function() {
-//                            // this.record
-//                        }
-//                    }
-//                ];
-//            }
-//        }
-//    }
 });
