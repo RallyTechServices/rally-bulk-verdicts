@@ -3,11 +3,11 @@
 <head>
     <title>Bulk Test Case Verdicts</title>
     <!--  (c) 2014 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Sat Apr 12 2014 17:52:15 GMT-0700 (PDT) -->
+    <!--  Build Date: Sun Apr 13 2014 14:31:50 GMT-0700 (PDT) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Sat Apr 12 2014 17:52:15 GMT-0700 (PDT)";
-        var CHECKSUM = 19543715359;
+        var APP_BUILD_DATE = "Sun Apr 13 2014 14:31:50 GMT-0700 (PDT)";
+        var CHECKSUM = 19645944182;
     </script>
     
     <script type="text/javascript" src="/apps/2.0rc2/sdk.js"></script>
@@ -669,12 +669,7 @@ Ext.define('CustomApp', {
         
         /* fix for missing checkbox in header of table */
         var selectionModel = Ext.create('Rally.ui.selection.CheckboxModel', {
-            allowDeselect: true,
-            renderHeaderCheckbox: function() {
-                if (this._getSelectableRecords().length > 0) {
-                    this.view.headerCt.child('gridcolumn[isCheckerHd]').addCls(this.self.headerCheckboxCls);
-                }
-            }
+            allowDeselect: true
         });
         
         this.down('#display_box').add({
@@ -692,10 +687,17 @@ Ext.define('CustomApp', {
                 {text:'Last Verdict',dataIndex: 'LastVerdict'},
                 {text:'Last Run', dataIndex:'LastRun',renderer: Ext.util.Format.dateRenderer('Y-m-d') }
             ],
+            listeners: {
+                scope: this,
+                render: function(grid) {
+                    /* fix for missing checkbox in header of table */
+                    grid.view.headerCt.child('gridcolumn[isCheckerHd]').addCls(Ext.baseCSSPrefix + 'column-header-checkbox');
+                }
+            }/*,
             getSelectionModel: function() {
                 this.selModel = selectionModel;
                 return this.selModel;
-            }
+            }*/
         });
     }
 });

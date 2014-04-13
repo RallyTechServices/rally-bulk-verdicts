@@ -1,3 +1,9 @@
+Ext.override(Ext.selection.RowModel, {
+    onRowMouseDown: function (view, record, item, index, e) {
+        this.selectWithEvent(record, e);
+    }
+});
+
 Ext.define('CustomApp', {
     extend: 'Rally.app.App',
     componentCls: 'app',
@@ -88,12 +94,7 @@ Ext.define('CustomApp', {
         
         /* fix for missing checkbox in header of table */
         var selectionModel = Ext.create('Rally.ui.selection.CheckboxModel', {
-            allowDeselect: true,
-            renderHeaderCheckbox: function() {
-                if (this._getSelectableRecords().length > 0) {
-                    this.view.headerCt.child('gridcolumn[isCheckerHd]').addCls(this.self.headerCheckboxCls);
-                }
-            }
+            allowDeselect: true
         });
         
         this.down('#display_box').add({
@@ -111,10 +112,17 @@ Ext.define('CustomApp', {
                 {text:'Last Verdict',dataIndex: 'LastVerdict'},
                 {text:'Last Run', dataIndex:'LastRun',renderer: Ext.util.Format.dateRenderer('Y-m-d') }
             ],
+            listeners: {
+                scope: this,
+                render: function(grid) {
+                    /* fix for missing checkbox in header of table */
+                    grid.view.headerCt.child('gridcolumn[isCheckerHd]').addCls(Ext.baseCSSPrefix + 'column-header-checkbox');
+                }
+            }/*,
             getSelectionModel: function() {
                 this.selModel = selectionModel;
                 return this.selModel;
-            }
+            }*/
         });
     }
 });
