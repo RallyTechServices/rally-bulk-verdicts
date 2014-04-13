@@ -1,9 +1,3 @@
-Ext.override(Ext.selection.RowModel, {
-    onRowMouseDown: function (view, record, item, index, e) {
-        this.selectWithEvent(record, e);
-    }
-});
-
 Ext.define('CustomApp', {
     extend: 'Rally.app.App',
     componentCls: 'app',
@@ -118,11 +112,7 @@ Ext.define('CustomApp', {
                     /* fix for missing checkbox in header of table */
                     grid.view.headerCt.child('gridcolumn[isCheckerHd]').addCls(Ext.baseCSSPrefix + 'column-header-checkbox');
                 }
-            }/*,
-            getSelectionModel: function() {
-                this.selModel = selectionModel;
-                return this.selModel;
-            }*/
+            }
         });
     }
 });
