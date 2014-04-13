@@ -86,15 +86,22 @@ Ext.define('CustomApp', {
             data: testcases
         });
         
+        /* fix for missing checkbox in header of table */
+        var selectionModel = Ext.create('Rally.ui.selection.CheckboxModel', {
+            allowDeselect: true,
+            renderHeaderCheckbox: function() {
+                if (this._getSelectableRecords().length > 0) {
+                    this.view.headerCt.child('gridcolumn[isCheckerHd]').addCls(this.self.headerCheckboxCls);
+                }
+            }
+        });
         
         this.down('#display_box').add({
             xtype:'rallygrid',
             store: store,
+            selModel: selectionModel,
             showRowActionsColumn: true,
             enableBulkEdit: true,
-            selModel: {
-                xtype:'rallycheckboxmodel'  
-            },
             pagingToolbarCfg: {
                 store: store
             },
@@ -103,7 +110,11 @@ Ext.define('CustomApp', {
                 {text:'Name',dataIndex:'Name' },
                 {text:'Last Verdict',dataIndex: 'LastVerdict'},
                 {text:'Last Run', dataIndex:'LastRun',renderer: Ext.util.Format.dateRenderer('Y-m-d') }
-            ]
+            ],
+            getSelectionModel: function() {
+                this.selModel = selectionModel;
+                return this.selModel;
+            }
         });
     }
 });

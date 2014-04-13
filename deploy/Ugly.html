@@ -3,10 +3,10 @@
 <head>
     <title>Bulk Test Case Verdicts</title>
     <!--  (c) 2013 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Sat Apr 12 2014 16:44:54 GMT-0700 (PDT) -->
+    <!--  Build Date: Sat Apr 12 2014 17:52:15 GMT-0700 (PDT) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Sat Apr 12 2014 16:44:54 GMT-0700 (PDT)";
+        var APP_BUILD_DATE = "Sat Apr 12 2014 17:52:15 GMT-0700 (PDT)";
         var CHECKSUM = [%= checksum %];
     </script>
     
@@ -26,6 +26,23 @@
 
 .app {
 }
+
+.x-grid-row-checker, .x-column-header-checkbox .x-column-header-text {
+    height: 14px;
+    width: 14px;
+    line-height: 0;
+    background-image: url('https://rally1.rallydev.com/apps/2.0rc2/lib/ext/4.1.1a/resources/themes/images/default/grid/unchecked.gif');
+
+}
+
+.x-grid-hd-checker-on .x-column-header-text {
+    padding-left: 5px;
+    padding-right: 6px;
+    padding-top: 5px;
+    background-image: url('https://rally1.rallydev.com/apps/2.0rc2/lib/ext/4.1.1a/resources/themes/images/default/grid/checked.gif');
+    
+}
+
 .tsinfolink {
     position:absolute;
     right:0px;

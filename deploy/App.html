@@ -3,11 +3,11 @@
 <head>
     <title>Bulk Test Case Verdicts</title>
     <!--  (c) 2014 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Sat Apr 12 2014 16:44:54 GMT-0700 (PDT) -->
+    <!--  Build Date: Sat Apr 12 2014 17:52:15 GMT-0700 (PDT) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Sat Apr 12 2014 16:44:54 GMT-0700 (PDT)";
-        var CHECKSUM = 17612042651;
+        var APP_BUILD_DATE = "Sat Apr 12 2014 17:52:15 GMT-0700 (PDT)";
+        var CHECKSUM = 19543715359;
     </script>
     
     <script type="text/javascript" src="/apps/2.0rc2/sdk.js"></script>
@@ -667,15 +667,22 @@ Ext.define('CustomApp', {
             data: testcases
         });
         
+        /* fix for missing checkbox in header of table */
+        var selectionModel = Ext.create('Rally.ui.selection.CheckboxModel', {
+            allowDeselect: true,
+            renderHeaderCheckbox: function() {
+                if (this._getSelectableRecords().length > 0) {
+                    this.view.headerCt.child('gridcolumn[isCheckerHd]').addCls(this.self.headerCheckboxCls);
+                }
+            }
+        });
         
         this.down('#display_box').add({
             xtype:'rallygrid',
             store: store,
+            selModel: selectionModel,
             showRowActionsColumn: true,
             enableBulkEdit: true,
-            selModel: {
-                xtype:'rallycheckboxmodel'  
-            },
             pagingToolbarCfg: {
                 store: store
             },
@@ -684,7 +691,11 @@ Ext.define('CustomApp', {
                 {text:'Name',dataIndex:'Name' },
                 {text:'Last Verdict',dataIndex: 'LastVerdict'},
                 {text:'Last Run', dataIndex:'LastRun',renderer: Ext.util.Format.dateRenderer('Y-m-d') }
-            ]
+            ],
+            getSelectionModel: function() {
+                this.selModel = selectionModel;
+                return this.selModel;
+            }
         });
     }
 });
@@ -700,6 +711,23 @@ Ext.define('CustomApp', {
 
 .app {
 }
+
+.x-grid-row-checker, .x-column-header-checkbox .x-column-header-text {
+    height: 14px;
+    width: 14px;
+    line-height: 0;
+    background-image: url('https://rally1.rallydev.com/apps/2.0rc2/lib/ext/4.1.1a/resources/themes/images/default/grid/unchecked.gif');
+
+}
+
+.x-grid-hd-checker-on .x-column-header-text {
+    padding-left: 5px;
+    padding-right: 6px;
+    padding-top: 5px;
+    background-image: url('https://rally1.rallydev.com/apps/2.0rc2/lib/ext/4.1.1a/resources/themes/images/default/grid/checked.gif');
+    
+}
+
 .tsinfolink {
     position:absolute;
     right:0px;

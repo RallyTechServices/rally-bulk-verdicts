@@ -1,5 +1,22 @@
 .app {
 }
+
+.x-grid-row-checker, .x-column-header-checkbox .x-column-header-text {
+    height: 14px;
+    width: 14px;
+    line-height: 0;
+    background-image: url('https://rally1.rallydev.com/apps/2.0rc2/lib/ext/4.1.1a/resources/themes/images/default/grid/unchecked.gif');
+
+}
+
+.x-grid-hd-checker-on .x-column-header-text {
+    padding-left: 5px;
+    padding-right: 6px;
+    padding-top: 5px;
+    background-image: url('https://rally1.rallydev.com/apps/2.0rc2/lib/ext/4.1.1a/resources/themes/images/default/grid/checked.gif');
+    
+}
+
 .tsinfolink {
     position:absolute;
     right:0px;
